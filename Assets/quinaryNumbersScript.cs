@@ -27,6 +27,8 @@ public class quinaryNumbersScript : MonoBehaviour
     private int lastSelectedNumber = 0;
     public int[] numberOfEachColour = new int[5];
 
+    public Color[] answerColors;
+
     public int[] cyclingNumbersModified = new int[25];
     private int[] answers = new int[5];
 
@@ -354,11 +356,26 @@ public class quinaryNumbersScript : MonoBehaviour
             Debug.LogFormat("[Quintuples #{0}] You entered {1}{2}{3}{4}{5}. That is correct. Module disarmed.", moduleId, inputNumbers[0].text, inputNumbers[1].text, inputNumbers[2].text, inputNumbers[3].text, inputNumbers[4].text);
             GetComponent<KMBombModule>().HandlePass();
             moduleSolved = true;
+            foreach(TextMesh answer in inputNumbers)
+            {
+                answer.color = answerColors[1];
+            }
         }
         else
         {
             Debug.LogFormat("[Quintuples #{0}] Strike! You entered {1}{2}{3}{4}{5}. That is not correct.", moduleId, inputNumbers[0].text, inputNumbers[1].text, inputNumbers[2].text, inputNumbers[3].text, inputNumbers[4].text);
             GetComponent<KMBombModule>().HandleStrike();
+            for(int i = 0; i <= 4; i++)
+            {
+                if(inputNumbers[i].text == answers[i].ToString())
+                {
+                    inputNumbers[i].color = answerColors[1];
+                }
+                else
+                {
+                    inputNumbers[i].color = answerColors[2];
+                }
+            }
         }
     }
 
@@ -376,6 +393,7 @@ public class quinaryNumbersScript : MonoBehaviour
             {
                 displayedInputNumbers[i] = (displayedInputNumbers[i] + 1) % 10;
                 inputNumbers[i].text = displayedInputNumbers[i].ToString();
+                inputNumbers[i].color = answerColors[0];
             }
         }
     }
@@ -394,6 +412,7 @@ public class quinaryNumbersScript : MonoBehaviour
             {
                 displayedInputNumbers[i] = (displayedInputNumbers[i] + 9) % 10;
                 inputNumbers[i].text = displayedInputNumbers[i].ToString();
+                inputNumbers[i].color = answerColors[0];
             }
         }
     }
