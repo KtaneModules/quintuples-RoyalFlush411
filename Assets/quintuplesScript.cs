@@ -38,37 +38,26 @@ public class quintuplesScript : MonoBehaviour
     void Awake()
     {
         moduleId = moduleIdCounter++;
-        submitButton.OnInteract += delegate () { OnSubmitButton(); return false; };
-        foreach (KMSelectable iterator in upCycleButtons)
+        submitButton.OnInteract += OnSubmitButton;
+
+        for (int i = 0; i < 5; i++)
         {
-            KMSelectable pressedButton = iterator;
-            iterator.OnInteract += delegate () { OnUpCycleButton(pressedButton); return false; };
-        }
-        foreach (KMSelectable iterator in downCycleButtons)
-        {
-            KMSelectable pressedButton = iterator;
-            iterator.OnInteract += delegate () { OnDownCycleButton(pressedButton); return false; };
+            upCycleButtons[i].OnInteract += OnCycleButton(i, 1, upCycleButtons[i]);
+            downCycleButtons[i].OnInteract += OnCycleButton(i, 9, downCycleButtons[i]);
         }
     }
 
     void Start()
     {
         for (int i = 0; i <= 4; i++)
-        {
             inputNumbers[i].text = displayedInputNumbers[i].ToString();
-        }
-        PickNumbers();
-    }
 
-    void PickNumbers()
-    {
         for (int i = 0; i <= 24; i++)
         {
             int index = UnityEngine.Random.Range(1, 11);
             while (index == lastSelectedNumber)
-            {
                 index = UnityEngine.Random.Range(1, 11);
-            }
+
             lastSelectedNumber = index;
             cyclingNumbers[i] = index;
             cyclingNumbersModified[i] = index;
@@ -78,11 +67,8 @@ public class quintuplesScript : MonoBehaviour
             chosenColorsName[i] = potentialColorsName[colorIndex];
         }
         Logic();
-        StartCoroutine(display0());
-        StartCoroutine(display1());
-        StartCoroutine(display2());
-        StartCoroutine(display3());
-        StartCoroutine(display4());
+        for (int i = 0; i < 5; i++)
+            StartCoroutine(display(i));
     }
 
     private void Logic()
@@ -241,179 +227,66 @@ public class quintuplesScript : MonoBehaviour
         Debug.LogFormat("[Quintuples #{0}] The correct number to input is {1}{2}{3}{4}{5}.", moduleId, answers[0], answers[1], answers[2], answers[3], answers[4]);
     }
 
-    IEnumerator display0()
+    IEnumerator display(int ix)
     {
-        int i0 = 0;
+        int i = 0;
         while (!moduleSolved)
         {
-            cyclingNumbersDisplay[0].text = ((cyclingNumbers[i0 + indexModifier[0]]) % 10).ToString();
-            cyclingNumbersDisplay[0].color = chosenColors[i0 + indexModifier[0]];
+            cyclingNumbersDisplay[ix].text = ((cyclingNumbers[i + indexModifier[ix]]) % 10).ToString();
+            cyclingNumbersDisplay[ix].color = chosenColors[i + indexModifier[ix]];
             float delay = UnityEngine.Random.Range(0.25f, 2f);
             yield return new WaitForSeconds(delay);
-            i0++;
-            if (i0 == 5)
+            i = (i + 1) % 5;
+            if (i == 0)
             {
-                i0 = 0;
-                cyclingNumbersDisplay[0].text = "";
+                cyclingNumbersDisplay[ix].text = "";
                 yield return new WaitForSeconds(1f);
             }
         }
-        cyclingNumbersDisplay[0].text = "";
+        cyclingNumbersDisplay[ix].text = "";
     }
 
-    IEnumerator display1()
-    {
-        int i1 = 0;
-        while (!moduleSolved)
-        {
-            cyclingNumbersDisplay[1].text = ((cyclingNumbers[i1 + indexModifier[1]]) % 10).ToString();
-            cyclingNumbersDisplay[1].color = chosenColors[i1 + indexModifier[1]];
-            float delay = UnityEngine.Random.Range(0.25f, 2f);
-            yield return new WaitForSeconds(delay);
-            i1++;
-            if (i1 == 5)
-            {
-                i1 = 0;
-                cyclingNumbersDisplay[1].text = "";
-                yield return new WaitForSeconds(1f);
-            }
-        }
-        cyclingNumbersDisplay[1].text = "";
-    }
-
-    IEnumerator display2()
-    {
-        int i2 = 0;
-        while (!moduleSolved)
-        {
-            cyclingNumbersDisplay[2].text = ((cyclingNumbers[i2 + indexModifier[2]]) % 10).ToString();
-            cyclingNumbersDisplay[2].color = chosenColors[i2 + indexModifier[2]];
-            float delay = UnityEngine.Random.Range(0.25f, 2f);
-            yield return new WaitForSeconds(delay);
-            i2++;
-            if (i2 == 5)
-            {
-                i2 = 0;
-                cyclingNumbersDisplay[2].text = "";
-                yield return new WaitForSeconds(1f);
-            }
-        }
-        cyclingNumbersDisplay[2].text = "";
-    }
-
-    IEnumerator display3()
-    {
-        int i3 = 0;
-        while (!moduleSolved)
-        {
-            cyclingNumbersDisplay[3].text = ((cyclingNumbers[i3 + indexModifier[3]]) % 10).ToString();
-            cyclingNumbersDisplay[3].color = chosenColors[i3 + indexModifier[3]];
-            float delay = UnityEngine.Random.Range(0.25f, 2f);
-            yield return new WaitForSeconds(delay);
-            i3++;
-            if (i3 == 5)
-            {
-                i3 = 0;
-                cyclingNumbersDisplay[3].text = "";
-                yield return new WaitForSeconds(1f);
-            }
-        }
-        cyclingNumbersDisplay[3].text = "";
-    }
-
-    IEnumerator display4()
-    {
-        int i4 = 0;
-        while (!moduleSolved)
-        {
-            cyclingNumbersDisplay[4].text = ((cyclingNumbers[i4 + indexModifier[4]]) % 10).ToString();
-            cyclingNumbersDisplay[4].color = chosenColors[i4 + indexModifier[4]];
-            float delay = UnityEngine.Random.Range(0.25f, 2f);
-            yield return new WaitForSeconds(delay);
-            i4++;
-            if (i4 == 5)
-            {
-                i4 = 0;
-                cyclingNumbersDisplay[4].text = "";
-                yield return new WaitForSeconds(1f);
-            }
-        }
-        cyclingNumbersDisplay[4].text = "";
-    }
-
-    public void OnSubmitButton()
+    public bool OnSubmitButton()
     {
         submitButton.AddInteractionPunch();
         GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
         if (moduleSolved)
-        {
-            return;
-        }
+            return false;
+
         if (inputNumbers[0].text == answers[0].ToString() && inputNumbers[1].text == answers[1].ToString() && inputNumbers[2].text == answers[2].ToString() && inputNumbers[3].text == answers[3].ToString() && inputNumbers[4].text == answers[4].ToString())
         {
             Debug.LogFormat("[Quintuples #{0}] You entered {1}{2}{3}{4}{5}. That is correct. Module disarmed.", moduleId, inputNumbers[0].text, inputNumbers[1].text, inputNumbers[2].text, inputNumbers[3].text, inputNumbers[4].text);
             GetComponent<KMBombModule>().HandlePass();
             moduleSolved = true;
             foreach (TextMesh answer in inputNumbers)
-            {
                 answer.color = answerColors[1];
-            }
         }
         else
         {
             Debug.LogFormat("[Quintuples #{0}] Strike! You entered {1}{2}{3}{4}{5}. That is not correct.", moduleId, inputNumbers[0].text, inputNumbers[1].text, inputNumbers[2].text, inputNumbers[3].text, inputNumbers[4].text);
             GetComponent<KMBombModule>().HandleStrike();
             for (int i = 0; i <= 4; i++)
-            {
-                if (inputNumbers[i].text == answers[i].ToString())
-                {
-                    inputNumbers[i].color = answerColors[1];
-                }
-                else
-                {
-                    inputNumbers[i].color = answerColors[2];
-                }
-            }
+                inputNumbers[i].color = inputNumbers[i].text == answers[i].ToString() ? answerColors[1] : answerColors[2];
         }
+        return false;
     }
 
-    public void OnUpCycleButton(KMSelectable iterator)
+    public KMSelectable.OnInteractHandler OnCycleButton(int i, int offset, KMSelectable btn)
     {
-        iterator.AddInteractionPunch(0.5f);
-        GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-        if (moduleSolved)
+        return delegate
         {
-            return;
-        }
-        for (int i = 0; i <= 4; i++)
-        {
-            if (iterator == upCycleButtons[i])
-            {
-                displayedInputNumbers[i] = (displayedInputNumbers[i] + 1) % 10;
-                inputNumbers[i].text = displayedInputNumbers[i].ToString();
-                inputNumbers[i].color = answerColors[0];
-            }
-        }
+            btn.AddInteractionPunch(0.5f);
+            GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+            if (moduleSolved)
+                return false;
+
+            displayedInputNumbers[i] = (displayedInputNumbers[i] + offset) % 10;
+            inputNumbers[i].text = displayedInputNumbers[i].ToString();
+            inputNumbers[i].color = answerColors[0];
+            return false;
+        };
     }
 
-    public void OnDownCycleButton(KMSelectable iterator)
-    {
-        iterator.AddInteractionPunch(0.5f);
-        GetComponent<KMAudio>().PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-        if (moduleSolved)
-        {
-            return;
-        }
-        for (int i = 0; i <= 4; i++)
-        {
-            if (iterator == downCycleButtons[i])
-            {
-                displayedInputNumbers[i] = (displayedInputNumbers[i] + 9) % 10;
-                inputNumbers[i].text = displayedInputNumbers[i].ToString();
-                inputNumbers[i].color = answerColors[0];
-            }
-        }
-    }
 #pragma warning disable 414
     private readonly string TwitchHelpMessage = @"!{0} submit 82341 [submit this answer] | !{0} press 82341 [cycle each slot up this many times] | !{0} submit [submit answer as is]";
 #pragma warning restore 414
