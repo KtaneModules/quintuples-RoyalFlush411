@@ -416,4 +416,47 @@ public class quinaryNumbersScript : MonoBehaviour
             }
         }
     }
+    #pragma warning disable 414
+        private string TwitchHelpMessage = @"Submit your answer with “!{0} submit”. Press each number a number of times using “!{0} press 82341”.";
+    #pragma warning restore 414
+    public IEnumerator ProcessTwitchCommand(string command)
+    {
+        var commands = command.ToLowerInvariant().Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+        if (commands[0] == "submit")
+        {
+            yield return null;
+            yield return submitButton;
+            yield return new WaitForSeconds(0.1f);
+            yield return submitButton;
+        }
+        if (commands.Length != 2  || commands[0] != "press")
+            yield break;
+        
+        var numbers = commands[1].Where(c => !char.IsWhiteSpace(c));
+        Boolean flag = false;
+        foreach (var number in numbers)
+        {
+            int num = number - '0';
+            if (num < 0 || num > 9)
+                flag = true;
+        }
+        if (numbers.Count() != 5 || flag)
+            yield break;
+
+        int i = 0;
+
+        foreach (var number in numbers)
+        {
+            int num = number - '0';
+            for (int j = 0; j < num; j++)
+            {
+                yield return null;
+                yield return upCycleButtons[i];
+                yield return new WaitForSeconds(0.05f);
+                yield return upCycleButtons[i];
+                yield return new WaitForSeconds(0.05f);
+            }
+            i++;
+        }
+    }
 }
