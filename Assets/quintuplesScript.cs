@@ -423,7 +423,7 @@ public class quintuplesScript : MonoBehaviour
         var commands = command.ToLowerInvariant().Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
         // “submit” command without numbers
-        if (command.Length == 1 && commands[0] == "submit")
+        if (commands.Length == 1 && commands[0] == "submit")
             return new[] { submitButton };
 
         if (commands.Length != 2)
