@@ -540,7 +540,7 @@ GameObject:
   - component: {fileID: 114948544826767402}
   - component: {fileID: 114688583288572390}
   m_Layer: 0
-  m_Name: quinaryNumbers
+  m_Name: quintuples
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4701,7 +4701,7 @@ MonoBehaviour:
   m_Script: {fileID: 1702003387, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 114434167506482310}
+  Parent: {fileID: 0}
   Children:
   - {fileID: 114228044052794824}
   - {fileID: 114688648410329684}
